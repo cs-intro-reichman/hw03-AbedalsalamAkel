@@ -1,7 +1,7 @@
 public class LoanCalc {
 
     static double epsilon = 0.01; 
-    static int iterationCounter; 
+    static int iterationCounter;
 
     public static void main(String[] args) {
         
@@ -16,7 +16,7 @@ public class LoanCalc {
         System.out.printf("Periodical payment, using brute force: %.2f\n", bruteForcePayment);
         System.out.println("Number of iterations: " + iterationCounter);
 
-        // Bisection search
+        
         iterationCounter = 0;
         double bisectionPayment = bisectionSolver(loan, annualRate, n);
         System.out.printf("Periodical payment, using bisection search: %.2f\n", bisectionPayment);
@@ -24,39 +24,34 @@ public class LoanCalc {
     }
 
     public static double bruteForceSolver(double loan, double annualRate, int n) {
-        double payment = loan / n; 
+        double payment = 0; 
         double balance;
 
-        while (true) {
-            balance = endBalance(loan, annualRate, n, payment);
-            if (Math.abs(balance) <= epsilon) {
-                break;
-            }
+        do {
             payment += epsilon; 
+            balance = endBalance(loan, annualRate, n, payment);
             iterationCounter++;
-        }
+        } while (balance > 0);
 
         return payment;
     }
 
     public static double bisectionSolver(double loan, double annualRate, int n) {
         double low = 0;
-        double high = loan;
+        double high = loan; 
         double payment = 0;
 
-        while ((high - low) >= epsilon) {
+        do {
             payment = (low + high) / 2;
             double balance = endBalance(loan, annualRate, n, payment);
-
-            if (balance > epsilon) {
-                low = payment;
-            } else if (balance < -epsilon) {
-                high = payment;
-            } else {
-                break; // Found a payment that gets the balance within epsilon of 0
-            }
             iterationCounter++;
-        }
+
+            if (balance > 0) {
+                low = payment;
+            } else {
+                high = payment;
+            }
+        } while (high - low > epsilon);
 
         return payment;
     }
