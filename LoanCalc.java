@@ -9,18 +9,17 @@ public class LoanCalc {
             System.out.println("Usage: java LoanCalc <loan sum> <annual interest rate> <number of periods>");
             return;
         }
+        
         double loan = Double.parseDouble(args[0]);
         double annualRate = Double.parseDouble(args[1]);
         int n = Integer.parseInt(args[2]);
 
-        
         iterationCounter = 0;
         double bruteForcePayment = bruteForceSolver(loan, annualRate, n);
         System.out.println("Loan sum = " + loan + ", interest rate = " + annualRate + "%, periods = " + n);
         System.out.printf("Periodical payment, using brute force: %.2f\n", bruteForcePayment);
         System.out.println("Number of iterations: " + iterationCounter);
 
-        
         iterationCounter = 0;
         double bisectionPayment = bisectionSolver(loan, annualRate, n);
         System.out.printf("Periodical payment, using bisection search: %.2f\n", bisectionPayment);
@@ -28,21 +27,24 @@ public class LoanCalc {
     }
 
     public static double bruteForceSolver(double loan, double annualRate, int n) {
-        double payment = 0; 
+        double payment = 0;
         double balance;
 
+        // Start with an estimate for payment
+        payment = loan / n;
+
         do {
-            payment += epsilon; 
+            payment += epsilon;
             balance = endBalance(loan, annualRate, n, payment);
             iterationCounter++;
-        } while (balance > 0);
+        } while (balance > epsilon);  // Changed condition to balance > epsilon for convergence
 
         return payment;
     }
 
     public static double bisectionSolver(double loan, double annualRate, int n) {
-        double low = 0;
-        double high = loan; 
+        double low = loan / n / 2;
+        double high = loan;
         double payment = 0;
 
         do {
@@ -50,9 +52,9 @@ public class LoanCalc {
             double balance = endBalance(loan, annualRate, n, payment);
             iterationCounter++;
 
-            if (balance > 0) {
+            if (balance > epsilon) {
                 low = payment;
-            } else {
+            } else if (balance < -epsilon) {
                 high = payment;
             }
         } while (high - low > epsilon);
@@ -64,8 +66,10 @@ public class LoanCalc {
         double monthlyRate = annualRate / 12 / 100;
         double balance = loan;
 
+        // Applying the annuity formula to calculate balance
         for (int i = 0; i < n; i++) {
-            balance = balance * (1 + monthlyRate) - payment;
+            balance -= payment;
+            balance = balance * (1 + monthlyRate);
         }
 
         return balance;
