@@ -5,9 +5,13 @@ public class LoanCalc {
 
     public static void main(String[] args) {
         
-        double loan = 100000; 
-        double annualRate = 3; 
-        int n = 12; 
+        if(args.length < 3) {
+            System.out.println("Usage: java LoanCalc <loan sum> <annual interest rate> <number of periods>");
+            return;
+        }
+        double loan = Double.parseDouble(args[0]);
+        double annualRate = Double.parseDouble(args[1]);
+        int n = Integer.parseInt(args[2]);
 
         
         iterationCounter = 0;
