@@ -1,6 +1,6 @@
 public class LoanCalc {
 
-    static double epsilon = 0.01;
+    static double epsilon = 0.001; 
     static int iterationCounter;
 
     public static void main(String[] args) {
@@ -10,9 +10,9 @@ public class LoanCalc {
             return;
         }
 
-        int loan = Integer.parseInt(args[0]); // Loan sum can be an integer
-        double annualRate = Double.parseDouble(args[1]); // Interest rates should be a double for precision
-        int n = Integer.parseInt(args[2]); // Number of periods can be an integer
+        double loan = Double.parseDouble(args[0]);
+        double annualRate = Double.parseDouble(args[1]);
+        int n = Integer.parseInt(args[2]);
 
         iterationCounter = 0;
         double bruteForcePayment = bruteForceSolver(loan, annualRate, n);
@@ -26,7 +26,7 @@ public class LoanCalc {
         System.out.println("Number of iterations: " + iterationCounter);
     }
 
-    private static double endBalance(int loan, double annualRate, int n, double payment) {
+    private static double endBalance(double loan, double annualRate, int n, double payment) {
         double monthlyRate = annualRate / 12 / 100;
         double balance = loan;
         for (int i = 0; i < n; i++) {
@@ -35,7 +35,7 @@ public class LoanCalc {
         return balance;
     }
     
-    public static double bruteForceSolver(int loan, double annualRate, int n) {
+    public static double bruteForceSolver(double loan, double annualRate, int n) {
         double payment = 0;
         double balance;
         do {
@@ -46,10 +46,10 @@ public class LoanCalc {
         return payment;
     }
     
-    public static double bisectionSolver(int loan, double annualRate, int n) {
+    public static double bisectionSolver(double loan, double annualRate, int n) {
         double monthlyRate = annualRate / 12 / 100;
         double low = 0;
-        double high = loan; // Starting with the loan amount as the high estimate might be too large.
+        double high = loan / n + loan * monthlyRate; // Improved upper bound
         double payment = 0;
         
         while (high - low > epsilon) {
@@ -57,9 +57,9 @@ public class LoanCalc {
             double balance = endBalance(loan, annualRate, n, payment);
             iterationCounter++;
             
-            if (balance > 0) {
+            if (balance > epsilon) {
                 low = payment;
-            } else if (balance < 0) { // Adjusted to check if balance is less than 0.
+            } else if (balance < -epsilon) {
                 high = payment;
             }
         }
@@ -69,3 +69,4 @@ public class LoanCalc {
         return payment;
     }
 }
+
