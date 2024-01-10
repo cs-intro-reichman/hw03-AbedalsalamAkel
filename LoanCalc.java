@@ -10,8 +10,8 @@ public class LoanCalc {
             return;
         }
 
-        double loan = Double.parseDouble(args[0]);
-        double annualRate = Double.parseDouble(args[1]);
+        int loan = Integer.parseInt(args[0]);
+        int annualRate = Integer.parseInt(args[1]);
         int n = Integer.parseInt(args[2]);
 
         iterationCounter = 0;
