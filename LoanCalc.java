@@ -47,20 +47,29 @@ public class LoanCalc {
     }
     
     public static double bisectionSolver(double loan, double annualRate, int n) {
+        double monthlyRate = annualRate / 12 / 100;
         double low = 0;
-        double high = loan;
+        
+        double high = loan / n + loan * monthlyRate;
         double payment = 0;
-        do {
+        
+        while (high - low > epsilon) {
             payment = (low + high) / 2;
             double balance = endBalance(loan, annualRate, n, payment);
             iterationCounter++;
+            
             if (balance > 0) {
                 low = payment;
             } else {
                 high = payment;
             }
-        } while (high - low > epsilon);
+        }
+        
+    
+        payment = Math.round(payment * 100.0) / 100.0;
+        
         return payment;
     }
+    
     
 }
